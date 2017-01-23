@@ -1,0 +1,2 @@
+# Logger
+Minimal javascript logger 
