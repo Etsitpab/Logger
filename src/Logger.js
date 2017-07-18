@@ -21,7 +21,8 @@
         "log": 40,
         "info": 30,
         "warn": 20,
-        "error": 10
+        "error": 10,
+        "none": 0
     };
     var getTime = function () {
         var d = new Date();
