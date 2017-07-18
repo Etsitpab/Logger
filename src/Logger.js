@@ -31,50 +31,86 @@
         var stack = new Error().stack;
         return stack.split("\n")[3].replace(/\s*at\s*/g, "");
     };
-    window.getLogger = function (prefix = "", level = 50) {
+
+    this.getLogger = function (prefix = "", level = 30) {
         var tab = 0;
+        var display = function (fun, args) {
+            if (tab !== 0) {
+                args.unshift(Array(tab + 1).join("\t"));
+            }
+            if (prefix !== "") {
+                args.unshift(prefix);
+            }
+            // args.unshift(getLocation());
+            args.unshift(getTime());
+            fun.apply(console, args);
+        };
         var getLogFunction = function(c) {
-            var fun = console[console[c] ? c : "log"];
             return function () {
-                var args = Array.prototype.slice.call(arguments);
                 if (level >= levelValues[c]) {
-                    if (prefix !== "") {
-                        args.unshift(Array(tab + 1).join("\t"));
-                    }
-                    if (prefix !== "") {
-                        args.unshift(prefix);
-                    }
-                    // args.unshift(getLocation());
-                    args.unshift(getTime());
-                    fun.apply(console, args);
+                    display(console[console[c] ? c : "log"], Array.prototype.slice.call(arguments));
                 }
+                return this;
             };
         };
 
-        return {
+        var getGroupFunction = function (name) {
+            return function () {
+                var fun, args = Array.prototype.slice.call(arguments);
+                if (console[name]) {
+                    display(console[name], args);
+                } else {
+                    if (name === "groupEnd") {
+                        this.untab();
+                        display(function () {}, args);
+                    } else {
+                        args.unshift("*");
+                        display(console.info, args);
+                        this.tab();
+                    }
+                }
+
+                return this;
+            };
+        };
+        var logger = {
             "tab": function () {
                 tab++;
+                return this;
             },
             "untab": function () {
                 tab = tab === 0  ? 0 : tab - 1;
+                return this;
             },
             get level() {
                 return level;
             },
             set level(value) {
-                level = levelValues[value];
+                if (typeof value === "string") {
+                    level = levelValues[value];
+                } else {
+                    level = value;
+                }
+                return this;
             },
             get prefix() {
                 return prefix;
             },
             set prefix(value) {
                 prefix = value;
+                return this;
             },
+            "group": getGroupFunction("group"),
+            "groupCollapsed": getGroupFunction("groupCollapsed"),
+            "groupEnd": getGroupFunction("groupEnd"),
             "log":   getLogFunction("log"),
             "debug": getLogFunction("debug"),
             "info":  getLogFunction("info"),
             "warn":  getLogFunction("warn"),
             "error": getLogFunction("error")
         };
+        logger.prefix = prefix;
+        logger.level = level;
+        return logger;
     };
-})();
+}).bind((typeof module !== 'undefined' && module.exports) ? global : window)();
