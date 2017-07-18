@@ -25,7 +25,9 @@
     };
     var getTime = function () {
         var d = new Date();
-        return [d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()].join(":");
+        var out = [d.getHours(), d.getMinutes(), d.getSeconds()].map(v => String("00" + v).slice(-2));
+        out.push(String("000" + d.getMilliseconds()).slice(-3));
+        return out.join(":");
     };
     var getLocation = function () {
         var stack = new Error().stack;
