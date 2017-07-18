@@ -57,8 +57,12 @@
             };
         };
 
+        var tmpLevels = [], defaultLevel = level;
         var getGroupFunction = function (name) {
             return function () {
+                if (level === 0) {
+                    return this;
+                }
                 var fun, args = Array.prototype.slice.call(arguments);
                 if (console[name]) {
                     display(console[name], args);
@@ -102,6 +106,13 @@
             set prefix(value) {
                 prefix = value;
                 return this;
+            },
+            "setTemporaryLogLevel": function (value) {
+                tmpLevels.push(level);
+                this.level = value;
+            },
+            "restoreLogLevel": function () {
+                this.level = tmpLevels.pop() || defaultLevel;
             },
             "group": getGroupFunction("group"),
             "groupCollapsed": getGroupFunction("groupCollapsed"),
