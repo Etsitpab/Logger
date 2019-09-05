@@ -1,0 +1,21 @@
+{
+    "name": "@etsitpab/logger",
+    "version": "1.0.2",
+    "description": "Small logger for node and browser",
+    "repository": "https://github.com/Etsitpab/Logger",
+    "main": "logger.js",
+    "scripts": {
+        "test": "jest --coverage"
+    },
+    "author": "Baptiste Mazin",
+    "license": "ISC",
+    "dependencies": {
+        "esm": "^3.2.25"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.5.5",
+        "@babel/preset-env": "^7.5.5",
+        "babel-jest": "^24.9.0",
+        "jest": "^24.9.0"
+    }
+}
