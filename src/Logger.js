@@ -13,7 +13,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author Baptiste Mazin     <baptiste.mazin@telecom-paristech.fr>
- * @author Guillaume Tartavel <guillaume.tartavel@telecom-paristech.fr>
  */
 
 const loggers = {};
@@ -34,7 +33,7 @@ class Logger {
         this.level = level;
         this.groupActivated = groupActivated;
 
-        this._tab = 0;
+        this.__tab = 0;
 
         for (let fun of ["group", "groupCollapsed", "groupEnd"]) {
             this[fun] = this._getGroupFunction(fun);
@@ -44,14 +43,14 @@ class Logger {
         }
     }
     _getLogFunction(c) {
-        let fun = console[console[c] ? c : "log"],
+        const fun = console[console[c] ? c : "log"],
             funLevel = this._levelValues[c];
         return (...args) => {
             if (this.level >= funLevel) {
                 this.display(fun, args);
             }
             if (this.htmlLog) {
-                let node = this.htmlLog.createElement("div");
+                const node = this.htmlLog.createElement("div");
                 node.classList.add(c);
                 node.innerHTML = args.join(" ");
                 this._currentNode.appendChild(node);
@@ -91,8 +90,8 @@ class Logger {
     }
 
     display(fun, args) {
-        if (this._tab !== 0) {
-            args.unshift(Array(this._tab + 1).join("\t"));
+        if (this.__tab !== 0) {
+            args.unshift(Array(this.__tab + 1).join("\t"));
         }
         if (this._prefix !== "") {
             args.unshift(this._prefix);
@@ -103,21 +102,21 @@ class Logger {
     }
 
     getTime(d = new Date()) {
-        let out = [d.getHours(), d.getMinutes(), d.getSeconds()].map(v => String(v).padStart(2, "0"));
+        const out = [d.getHours(), d.getMinutes(), d.getSeconds()].map(v => String(v).padStart(2, "0"));
         out.push(String(d.getMilliseconds()).padStart(3, "0"));
         return out.join(":");
     }
     getLocation() {
-        let stack = new Error().stack;
+        const stack = new Error().stack;
         return stack.split("\n")[3].replace(/\s*at\s*/g, "");
     }
     _tab() {
-        this._tab++;
+        this.__tab++;
         return this;
     }
     _untab() {
-        if (this.tab > 0) {
-            this.tab--;
+        if (this.__tab > 0) {
+            this.__tab--;
         }
         return this;
     }
@@ -177,7 +176,7 @@ class Logger {
     }
 
     openHTML() {
-        let newWindow = window.open();
+        const newWindow = window.open();
         newWindow.document.documentElement.innerHTML = this.htmlLog.documentElement.innerHTML;
     }
 }
